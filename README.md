@@ -1,8 +1,8 @@
-<p align="center"><img src="logo.jpg" width="110" alt="USB 检测器图标"></p>
-<h1 align="center">USB MONITOR</h1>
+<p align="center"><img src="logo.jpg" width="110" alt="usb-CybersecurityMonitor 图标"></p>
+<h1 align="center">usb-CybersecurityMonitor</h1>
 <p align="center">扫描 · 监听 · 查询 · 行为查看 · 手动阻断</p>
 
-<p align="center"><img src="docs/overview.svg" width="800" alt="USB 检测器功能示意"></p>
+<p align="center"><img src="docs/overview.svg" width="800" alt="usb-CybersecurityMonitor 功能示意"></p>
 
 Windows 桌面 USB 行为监测工具。查询设备、扫描名称与属性、监听文件变化和关联进程，支持选中设备后手动阻断与恢复，也可在托盘后台运行。
 
@@ -17,7 +17,7 @@ Windows 桌面 USB 行为监测工具。查询设备、扫描名称与属性、�
 ### 使用
 
 1. 下载并解压项目，保留所有配套文件。
-2. 双击 `LaunchUSBMonitor.vbs`；运行 `安装USB检测器.bat` 可安装桌面快捷方式。
+2. 双击 `Launch-usb-CybersecurityMonitor.vbs`；运行 `Install-usb-CybersecurityMonitor.bat` 可安装桌面快捷方式。
 3. 接入 USB 设备查看信息；插入 U 盘可进行巡检。阻断前先选中顶部设备行。
 
 运行环境：Windows 10 / 11、Windows PowerShell 5.1。正常监测使用普通权限；禁用或启用设备需要管理员确认。

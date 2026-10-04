@@ -8,10 +8,10 @@ if (Test-Path -LiteralPath $managementModuleManifest) { Import-Module $managemen
 $cimModuleManifest = Join-Path $PSHOME 'Modules\CimCmdlets\CimCmdlets.psd1'
 if (Test-Path -LiteralPath $cimModuleManifest) { Import-Module $cimModuleManifest -ErrorAction Stop } else { Import-Module (Join-Path $PSHOME 'Modules\CimCmdlets\CimCmdlets.psd1') -ErrorAction Stop }
 trap {
-    $message = 'USB Monitor 启动失败：' + $_.Exception.Message
+    $message = 'usb-CybersecurityMonitor 启动失败：' + $_.Exception.Message
     try {
         Add-Type -AssemblyName System.Windows.Forms -ErrorAction Stop
-        [System.Windows.Forms.MessageBox]::Show($message, 'USB MONITOR', 'OK', 'Error') | Out-Null
+        [System.Windows.Forms.MessageBox]::Show($message, 'usb-CybersecurityMonitor', 'OK', 'Error') | Out-Null
     } catch { [Console]::Error.WriteLine($message) }
     break
 }
@@ -21,11 +21,11 @@ Add-Type -AssemblyName System.Drawing
 
 $script:scriptPath = $PSCommandPath
 $script:instanceMutexOwned = $false
-$script:instanceMutex = New-Object System.Threading.Mutex($true, 'Local\USBDetector.Singleton', [ref]$script:instanceMutexOwned)
+$script:instanceMutex = New-Object System.Threading.Mutex($true, 'Local\UsbCybersecurityMonitor.Singleton', [ref]$script:instanceMutexOwned)
 if (!$script:instanceMutexOwned) {
     if (!$Tray) {
         try {
-            $showRequest = [Threading.EventWaitHandle]::OpenExisting('Local\USBDetector.ShowWindow')
+            $showRequest = [Threading.EventWaitHandle]::OpenExisting('Local\UsbCybersecurityMonitor.ShowWindow')
             try { [void]$showRequest.Set() } finally { $showRequest.Dispose() }
             exit 0
         } catch {}
@@ -33,32 +33,32 @@ if (!$script:instanceMutexOwned) {
             Add-Type -TypeDefinition @'
 using System;
 using System.Runtime.InteropServices;
-public static class UsbDetectorWindowActivation {
+public static class UsbCybersecurityMonitorWindowActivation {
     [DllImport("user32.dll", CharSet=CharSet.Unicode)] public static extern IntPtr FindWindow(string className, string windowName);
     [DllImport("user32.dll")] public static extern bool ShowWindowAsync(IntPtr handle, int command);
     [DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr handle);
 }
 '@ -ErrorAction SilentlyContinue
-            $existingWindow = [UsbDetectorWindowActivation]::FindWindow($null, 'USB MONITOR')
+            $existingWindow = [UsbCybersecurityMonitorWindowActivation]::FindWindow($null, 'usb-CybersecurityMonitor')
             if ($existingWindow -ne [IntPtr]::Zero) {
-                [void][UsbDetectorWindowActivation]::ShowWindowAsync($existingWindow, 9)
-                [void][UsbDetectorWindowActivation]::SetForegroundWindow($existingWindow)
+                [void][UsbCybersecurityMonitorWindowActivation]::ShowWindowAsync($existingWindow, 9)
+                [void][UsbCybersecurityMonitorWindowActivation]::SetForegroundWindow($existingWindow)
             }
         } catch {}
     }
     exit 0
 }
-$script:showWindowRequest = [Threading.EventWaitHandle]::new($false, [Threading.EventResetMode]::AutoReset, 'Local\USBDetector.ShowWindow')
+$script:showWindowRequest = [Threading.EventWaitHandle]::new($false, [Threading.EventResetMode]::AutoReset, 'Local\UsbCybersecurityMonitor.ShowWindow')
 $script:powershellPath = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
 if (!(Test-Path -LiteralPath $script:powershellPath)) { $script:powershellPath = Join-Path $PSHOME 'powershell.exe' }
 $script:wscriptPath = Join-Path $env:SystemRoot 'System32\wscript.exe'
-$script:launcherPath = Join-Path $PSScriptRoot 'LaunchUSBMonitor.vbs'
+$script:launcherPath = Join-Path $PSScriptRoot 'Launch-usb-CybersecurityMonitor.vbs'
 $script:startupFolder = [Environment]::GetFolderPath('Startup')
-$script:startupLink = Join-Path $script:startupFolder 'USB检测器.lnk'
-$script:stateFolder = Join-Path $env:LOCALAPPDATA 'USBDetector'
-if (!$env:LOCALAPPDATA) { $script:stateFolder = Join-Path $env:TEMP 'USBDetector' }
+$script:startupLink = Join-Path $script:startupFolder 'usb-CybersecurityMonitor.lnk'
+$script:stateFolder = Join-Path $env:LOCALAPPDATA 'UsbCybersecurityMonitor'
+if (!$env:LOCALAPPDATA) { $script:stateFolder = Join-Path $env:TEMP 'UsbCybersecurityMonitor' }
 $script:startupInitialized = Join-Path $script:stateFolder 'startup-default-v1'
-$script:iconPath = Join-Path $PSScriptRoot 'usb-monitor-v2.ico'
+$script:iconPath = Join-Path $PSScriptRoot 'usb-CybersecurityMonitor.ico'
 $script:knownDevices = @{}
 $script:knownCompositeDevices = @{}
 $script:containerIdCache = @{}
@@ -93,7 +93,7 @@ function ConvertTo-PsLiteral([string] $Value) {
     return "'" + $Value.Replace("'", "''") + "'"
 }
 function New-StartupShortcut {
-    if (!(Test-Path -LiteralPath $script:scriptPath)) { throw '找不到 USBMonitor.ps1。' }
+    if (!(Test-Path -LiteralPath $script:scriptPath)) { throw '找不到 usb-CybersecurityMonitor.ps1。' }
     if (!(Test-Path -LiteralPath $script:launcherPath)) { throw '找不到隐藏启动器。' }
     New-Item -ItemType Directory -Path $script:startupFolder -Force | Out-Null
     $shell = New-Object -ComObject WScript.Shell
@@ -316,7 +316,7 @@ function Show-RiskNotification([string] $Title, [string] $Body) {
         if ($script:toastTimer) { $script:toastTimer.Stop(); $script:toastTimer.Dispose(); $script:toastTimer = $null }
         if ($script:toast -and !$script:toast.IsDisposed) { $script:toast.Close(); $script:toast.Dispose() }
         $toast = New-Object System.Windows.Forms.Form
-        $toast.Text = 'USB MONITOR ALERT'
+        $toast.Text = 'usb-CybersecurityMonitor ALERT'
         $toast.FormBorderStyle = [System.Windows.Forms.FormBorderStyle]::FixedSingle
         $toast.StartPosition = [System.Windows.Forms.FormStartPosition]::Manual
         $toast.ShowInTaskbar = $false
@@ -1239,8 +1239,8 @@ function Refresh-Views($Snapshot) {
 
 $form = New-Object System.Windows.Forms.Form
 $script:form = $form
-$form.Text = 'USB MONITOR'
-$form.Name = 'USBMonitorMainWindow'
+$form.Text = 'usb-CybersecurityMonitor'
+$form.Name = 'UsbCybersecurityMonitorMainWindow'
 if (Test-Path -LiteralPath $script:iconPath) {
     try { $script:appIcon = [System.Drawing.Icon]::new($script:iconPath); $form.Icon = $script:appIcon } catch { Add-LogLine ('图标加载失败：{0}' -f $_.Exception.Message) }
 }
@@ -1433,7 +1433,7 @@ $script:scanMenu = New-Object System.Windows.Forms.ContextMenuStrip
 $scanLocalItem = $script:scanMenu.Items.Add('巡检 USB 名称/属性（不读内容）')
 $scanLocalItem.Add_Click({
     $volumes = @($script:currentUsbVolumes)
-    if ($volumes.Count -eq 0) { [System.Windows.Forms.MessageBox]::Show('未检测到 USB 存储卷。', 'USB MONITOR', 'OK', 'Information') | Out-Null; return }
+    if ($volumes.Count -eq 0) { [System.Windows.Forms.MessageBox]::Show('未检测到 USB 存储卷。', 'usb-CybersecurityMonitor', 'OK', 'Information') | Out-Null; return }
     $paths = @($volumes | ForEach-Object { $_.Drive + '\' })
     Start-UsbMetadataInventory -Paths $paths -Source '手动扫描'
 })
@@ -1448,7 +1448,7 @@ $script:blockButton.Size = New-Object System.Drawing.Size(228, 38)
 Set-FlatButton $script:blockButton ([System.Drawing.Color]::Red)
 $script:blockButton.Add_Click({
     if ($script:deviceList.SelectedItems.Count -eq 0) {
-        [System.Windows.Forms.MessageBox]::Show('先选择设备。', 'USB MONITOR', 'OK', 'Information') | Out-Null
+        [System.Windows.Forms.MessageBox]::Show('先选择设备。', 'usb-CybersecurityMonitor', 'OK', 'Information') | Out-Null
         return
     }
     $selected = $script:deviceList.SelectedItems[0]
@@ -1471,7 +1471,7 @@ $restoreButton.Size = New-Object System.Drawing.Size(150, 38)
 Set-FlatButton $restoreButton ([System.Drawing.Color]::White)
 $restoreButton.Add_Click({
     if ($script:deviceList.SelectedItems.Count -eq 0) {
-        [System.Windows.Forms.MessageBox]::Show('先选择设备。', 'USB MONITOR', 'OK', 'Information') | Out-Null
+        [System.Windows.Forms.MessageBox]::Show('先选择设备。', 'usb-CybersecurityMonitor', 'OK', 'Information') | Out-Null
         return
     }
     $selected = $script:deviceList.SelectedItems[0]
@@ -1484,7 +1484,7 @@ $restoreButton.Add_Click({
 $form.Controls.Add($restoreButton)
 
 $footer = New-Object System.Windows.Forms.Label
-$footer.Text = 'USB MONITOR'
+$footer.Text = 'usb-CybersecurityMonitor'
 $footer.Location = New-Object System.Drawing.Point(710, 795)
 $footer.Size = New-Object System.Drawing.Size(296, 24)
 $footer.TextAlign = [System.Drawing.ContentAlignment]::MiddleRight
@@ -1500,17 +1500,17 @@ Add-LogLine '监听器已启动；USB 设备、文件变化与关联进程监听
 Start-UsbBackgroundMonitors
 try {
     $script:trayMenu = New-Object System.Windows.Forms.ContextMenuStrip
-    $trayOpenItem = $script:trayMenu.Items.Add('打开 USB MONITOR')
+    $trayOpenItem = $script:trayMenu.Items.Add('打开 usb-CybersecurityMonitor')
     [void]$trayOpenItem.Add_Click({
         if ($script:form -and !$script:form.IsDisposed) { $script:form.Show(); $script:form.WindowState = [System.Windows.Forms.FormWindowState]::Normal; $script:form.Activate() }
     })
-    $trayExitItem = $script:trayMenu.Items.Add('退出 USB MONITOR')
+    $trayExitItem = $script:trayMenu.Items.Add('退出 usb-CybersecurityMonitor')
     [void]$trayExitItem.Add_Click({
         $script:exitRequested = $true
         if ($script:form -and !$script:form.IsDisposed) { $script:form.Close() }
     })
     $script:trayIcon = New-Object System.Windows.Forms.NotifyIcon
-    $script:trayIcon.Text = 'USB MONITOR - USB 行为监听中'
+    $script:trayIcon.Text = 'usb-CybersecurityMonitor - USB 行为监听中'
     $script:trayIcon.ContextMenuStrip = $script:trayMenu
     if ($script:appIcon) { $script:trayIcon.Icon = $script:appIcon } else { $script:trayIcon.Icon = [System.Drawing.SystemIcons]::Shield }
     $script:trayIcon.Visible = $true

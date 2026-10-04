@@ -1,7 +1,7 @@
 ﻿$ErrorActionPreference='Stop'
 foreach($m in @('Microsoft.PowerShell.Utility','Microsoft.PowerShell.Management')) { Import-Module (Join-Path $PSHOME ('Modules\'+$m+'\'+$m+'.psd1')) }
 $t=$null;$e=$null
-$ast=[Management.Automation.Language.Parser]::ParseFile((Join-Path $PSScriptRoot 'USBMonitor.ps1'),[ref]$t,[ref]$e)
+$ast=[Management.Automation.Language.Parser]::ParseFile((Join-Path $PSScriptRoot 'usb-CybersecurityMonitor.ps1'),[ref]$t,[ref]$e)
 if($e.Count){throw 'Source parse error'}
 foreach($f in $ast.FindAll({param($n) $n -is [Management.Automation.Language.FunctionDefinitionAst]},$false)) {
     if($f.Name -in @('Start-UsbMetadataInventory','ConvertTo-PsLiteral','Get-UsbProcessRiskReason')){Invoke-Expression $f.Extent.Text}

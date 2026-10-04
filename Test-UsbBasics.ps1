@@ -5,7 +5,7 @@ foreach ($module in @('Microsoft.PowerShell.Utility','Microsoft.PowerShell.Manag
 }
 Add-Type -AssemblyName System.Windows.Forms
 $tokens = $null; $errors = $null
-$ast = [Management.Automation.Language.Parser]::ParseFile((Join-Path $PSScriptRoot 'USBMonitor.ps1'), [ref]$tokens, [ref]$errors)
+$ast = [Management.Automation.Language.Parser]::ParseFile((Join-Path $PSScriptRoot 'usb-CybersecurityMonitor.ps1'), [ref]$tokens, [ref]$errors)
 if ($errors.Count) { throw 'Script syntax errors' }
 foreach ($definition in $ast.FindAll({param($node) $node -is [Management.Automation.Language.FunctionDefinitionAst]}, $false)) {
     Invoke-Expression $definition.Extent.Text
@@ -43,7 +43,7 @@ try {
     $listenerRegistered = [bool](Get-EventSubscriber -SourceIdentifier $script:processEventSource -ErrorAction SilentlyContinue) -or [bool]$script:processPollAction
     Start-Sleep -Seconds 2
     # Harmless local process with a USB path in its arguments; does not access the drive.
-    $probe = Start-Process -FilePath "$env:SystemRoot\System32\cmd.exe" -ArgumentList '/d /c "ping -n 9 127.0.0.1 >nul & rem D:\USBDetector-readonly-probe"' -WindowStyle Hidden -PassThru
+    $probe = Start-Process -FilePath "$env:SystemRoot\System32\cmd.exe" -ArgumentList '/d /c "ping -n 9 127.0.0.1 >nul & rem D:\UsbCybersecurityMonitor-readonly-probe"' -WindowStyle Hidden -PassThru
     $deadline = (Get-Date).AddSeconds(12)
     do { Start-Sleep -Milliseconds 250; Invoke-UsbProcessPoll } while ($script:processEvents.IsEmpty -and (Get-Date) -lt $deadline)
     $events = @(); $entry = ''
@@ -55,7 +55,7 @@ try {
         CompositeWarnings=@(Get-UsbCompositeDeviceWarnings $devices)
         FileWatcherPaths=@($script:fileWatchers.Values | Select-Object Path,EnableRaisingEvents)
         ProcessListenerRegistered=$listenerRegistered
-        ProcessProbeDetected=(@($events | Where-Object { $_ -match 'USBDetector-readonly-probe' }).Count -gt 0)
+        ProcessProbeDetected=(@($events | Where-Object { $_ -match 'UsbCybersecurityMonitor-readonly-probe' }).Count -gt 0)
         ProcessEvents=$events
         Logs=@($script:logList.Items)
         MonitorStatus=$script:processMonitorStatus

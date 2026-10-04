@@ -1,6 +1,6 @@
-$ErrorActionPreference='Stop'
+﻿$ErrorActionPreference='Stop'
 $tokens=$null; $errors=$null
-$ast=[Management.Automation.Language.Parser]::ParseFile((Join-Path $PSScriptRoot 'USBMonitor.ps1'),[ref]$tokens,[ref]$errors)
+$ast=[Management.Automation.Language.Parser]::ParseFile((Join-Path $PSScriptRoot 'usb-CybersecurityMonitor.ps1'),[ref]$tokens,[ref]$errors)
 foreach($definition in $ast.FindAll({param($node) $node -is [Management.Automation.Language.FunctionDefinitionAst]},$false)){ Invoke-Expression $definition.Extent.Text }
 . (Join-Path $PSScriptRoot 'AsyncMonitor.ps1')
 $clock=[Diagnostics.Stopwatch]::StartNew()

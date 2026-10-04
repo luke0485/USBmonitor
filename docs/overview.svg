@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="900" height="260" viewBox="0 0 900 260">
 <rect width="900" height="260" rx="20" fill="#141414"/>
-<text x="450" y="45" text-anchor="middle" fill="#ffffff" font-size="22" font-family="Segoe UI,Microsoft YaHei,sans-serif">USB MONITOR · 功能示意</text>
+<text x="450" y="45" text-anchor="middle" fill="#ffffff" font-size="22" font-family="Segoe UI,Microsoft YaHei,sans-serif">usb-CybersecurityMonitor · 功能示意</text>
 <g font-family="Segoe UI,Microsoft YaHei,sans-serif" text-anchor="middle">
 <rect x="30" y="80" width="260" height="140" rx="12" fill="#333333"/>
 <rect x="320" y="80" width="260" height="140" rx="12" fill="#333333"/>

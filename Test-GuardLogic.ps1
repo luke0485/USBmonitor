@@ -1,7 +1,7 @@
 ﻿$ErrorActionPreference='Stop'
 foreach($module in @('Microsoft.PowerShell.Utility','Microsoft.PowerShell.Management')){Import-Module (Join-Path $PSHOME ('Modules\'+$module+'\'+$module+'.psd1'))}
 $t=$null;$e=$null
-$ast=[Management.Automation.Language.Parser]::ParseFile((Join-Path $PSScriptRoot 'USBMonitor.ps1'),[ref]$t,[ref]$e)
+$ast=[Management.Automation.Language.Parser]::ParseFile((Join-Path $PSScriptRoot 'usb-CybersecurityMonitor.ps1'),[ref]$t,[ref]$e)
 foreach($definition in $ast.FindAll({param($node) $node -is [Management.Automation.Language.FunctionDefinitionAst]},$false)) {
     if($definition.Name -in @('Get-DeviceContainerId','Get-RelatedDeviceInstanceIds','Check-PendingOperations')){Invoke-Expression $definition.Extent.Text}
 }

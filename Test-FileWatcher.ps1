@@ -4,7 +4,7 @@ foreach ($module in @('Microsoft.PowerShell.Utility','Microsoft.PowerShell.Manag
 }
 Add-Type -AssemblyName System.Windows.Forms
 $tokens=$null; $errors=$null
-$ast=[Management.Automation.Language.Parser]::ParseFile((Join-Path $PSScriptRoot 'USBMonitor.ps1'),[ref]$tokens,[ref]$errors)
+$ast=[Management.Automation.Language.Parser]::ParseFile((Join-Path $PSScriptRoot 'usb-CybersecurityMonitor.ps1'),[ref]$tokens,[ref]$errors)
 foreach ($definition in $ast.FindAll({param($node) $node -is [Management.Automation.Language.FunctionDefinitionAst]},$false)) { Invoke-Expression $definition.Extent.Text }
 $script:fileEvents=New-Object 'System.Collections.Concurrent.ConcurrentQueue[string]'
 $script:fileWatcherOverflow=New-Object 'System.Collections.Concurrent.ConcurrentDictionary[string,bool]'

@@ -4,7 +4,7 @@ foreach ($module in @('Microsoft.PowerShell.Utility','Microsoft.PowerShell.Manag
 }
 Add-Type -AssemblyName System.Windows.Forms
 $tokens=$null; $errors=$null
-$ast=[Management.Automation.Language.Parser]::ParseFile((Join-Path $PSScriptRoot 'USBMonitor.ps1'),[ref]$tokens,[ref]$errors)
+$ast=[Management.Automation.Language.Parser]::ParseFile((Join-Path $PSScriptRoot 'usb-CybersecurityMonitor.ps1'),[ref]$tokens,[ref]$errors)
 foreach ($definition in $ast.FindAll({param($node) $node -is [Management.Automation.Language.FunctionDefinitionAst]},$false)) { Invoke-Expression $definition.Extent.Text }
 . (Join-Path $PSScriptRoot 'AsyncMonitor.ps1')
 $script:processEvents=New-Object 'System.Collections.Concurrent.ConcurrentQueue[string]'
@@ -41,7 +41,7 @@ try {
     $readyDeadline=(Get-Date).AddSeconds(8)
     while (-not $script:backgroundStatus.ContainsKey('Process') -and (Get-Date) -lt $readyDeadline) { Start-Sleep -Milliseconds 100 }
     Start-Sleep -Milliseconds 500
-    $script:probe=Start-Process "$env:SystemRoot\System32\cmd.exe" -ArgumentList '/d /c "ping -n 9 127.0.0.1 >nul & rem D:\USBDetector-readonly-probe"' -WindowStyle Hidden -PassThru
+    $script:probe=Start-Process "$env:SystemRoot\System32\cmd.exe" -ArgumentList '/d /c "ping -n 9 127.0.0.1 >nul & rem D:\UsbCybersecurityMonitor-readonly-probe"' -WindowStyle Hidden -PassThru
     [IO.File]::WriteAllBytes((Join-Path $testRoot 'probe.lnk'),[byte[]]@())
     $script:clock.Restart()
     $timer.Add_Tick({
@@ -51,7 +51,7 @@ try {
             $script:lastTick=$now; $script:tickCount++
             Receive-UsbBackgroundResults
             $entry=''
-            while ($script:processEvents.TryDequeue([ref]$entry)) { if ($entry -match 'USBDetector-readonly-probe') { $script:processDetected=$true } }
+            while ($script:processEvents.TryDequeue([ref]$entry)) { if ($entry -match 'UsbCybersecurityMonitor-readonly-probe') { $script:processDetected=$true } }
             while ($script:fileEvents.TryDequeue([ref]$entry)) { if ($entry -match '\|CREATED\|[0-9]+\|.*probe.lnk$') { $script:fileDetected=$true } }
             if ($now -gt 6000 -and $script:snapshotReceived -and $script:processDetected -and $script:fileDetected) { $testForm.Close() }
             if ($now -gt 20000) { $testForm.Close() }

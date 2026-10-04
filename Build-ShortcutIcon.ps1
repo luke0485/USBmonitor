@@ -15,7 +15,7 @@ try {
             $frames += [pscustomobject]@{Size=$size; Bytes=$stream.ToArray()}
         } finally { $stream.Dispose(); $graphics.Dispose(); $bitmap.Dispose() }
     }
-    $output = [IO.File]::Create((Join-Path $PSScriptRoot 'usb-monitor-v2.ico'))
+    $output = [IO.File]::Create((Join-Path $PSScriptRoot 'usb-CybersecurityMonitor.ico'))
     $writer = [IO.BinaryWriter]::new($output)
     try {
         $writer.Write([uint16]0); $writer.Write([uint16]1); $writer.Write([uint16]$frames.Count)
